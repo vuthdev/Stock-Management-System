@@ -1,0 +1,104 @@
+<div class="motion-duration-300 fixed flex justify-center items-center h-full w-full bg-black/30 inset-0 z-50"
+     [ngClass]="{
+    'motion-opacity-in-0': !isClosing,
+    'motion-opacity-out-0': isClosing
+  }">
+  <div class="motion-duration-300 bg-neutral-800 text-white p-5 rounded-xl h-auto w-200"
+       [ngClass]="{
+      'motion-translate-y-in-50 motion-opacity-in-0 motion-scale-in-20': !isClosing,
+      'motion-translate-y-out-50 motion-opacity-out-0 motion-scale-out-80': isClosing
+      }"
+  >
+    <div class="flex justify-between items-center mb-3">
+      <h1 class="font-semibold text-xl">{{ isEdit? 'Update User':'Add New User' }}</h1>
+      <button matIconButton (click)="closeModal()" class="!text-white"><mat-icon fontIcon="close"></mat-icon></button>
+    </div>
+    <form (ngSubmit)="onSubmit()">
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">User Name</h1>
+        <mat-form-field class="w-full">
+          <mat-label>Enter Your username</mat-label>
+          <input matInput name="username" [(ngModel)]="userData.username">
+        </mat-form-field>
+
+      </div>
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">Password</h1>
+        <mat-form-field class="w-full">
+          <mat-label>Enter Your Password</mat-label>
+          <input matInput name="password" [(ngModel)]="userData.password">
+        </mat-form-field>
+      </div>
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">Email</h1>
+        <mat-form-field class="w-full">
+          <mat-label>Enter Your Email</mat-label>
+          <input matInput name="email" type="email" [(ngModel)]="userData.email">
+        </mat-form-field>
+      </div>
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">Gender</h1>
+        <mat-radio-group name="gender" [(ngModel)]="userData.gender" aria-label="Select an option">
+          <mat-radio-button class="mr-5" value="Male">Male</mat-radio-button>
+          <mat-radio-button value="Female">Female</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div class="mb-2 mt-2">
+        <h1 class="text-md font-semibold mb-1">Image</h1>
+        <div
+          class="flex items-center justify-center w-full"
+          (drop)="onFileDrop($event)"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+        >
+          <label
+            [class.border-blue-500]="isDragging"
+            [class.bg-gray-200]="isDragging"
+            for="dropzone-file"
+            class="flex flex-col items-center justify-center w-full h-30 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 transition"
+          >
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg
+                class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 16"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5
+                    5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5
+                    5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8
+                    8m2-2 2 2"
+                />
+              </svg>
+
+              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                <span class="font-semibold">Click to upload</span> or drag and drop
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                SVG, PNG, JPG or GIF (MAX. 800x400px)
+              </p>
+
+              @if (selectedFile) {
+                <p class="mt-3 text-sm text-blue-500">
+                  {{ selectedFile.name }}
+                </p>
+              }
+            </div>
+            <input id="dropzone-file" type="file" class="hidden" (change)="onFileSelected($event)" />
+          </label>
+        </div>
+      </div>
+      <div class="flex justify-center mt-3">
+        <button type="submit" mat-flat-button class="w-full">
+          {{ isEdit? 'Update':'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

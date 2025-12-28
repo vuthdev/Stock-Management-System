@@ -1,0 +1,39 @@
+<div class="motion-duration-300 fixed flex justify-center items-center h-full w-full bg-black/30 inset-0 z-50"
+     [ngClass]="{
+    'motion-opacity-in-0': !isClosing,
+    'motion-opacity-out-0': isClosing
+  }"
+>
+  <div class="motion-duration-300 bg-neutral-800 text-white p-5 rounded-xl h-auto w-200"
+       [ngClass]="{
+      'motion-translate-y-in-50 motion-opacity-in-0 motion-scale-in-10': !isClosing,
+      'motion-translate-y-out-50 motion-opacity-out-0 motion-scale-out-90': isClosing
+    }"
+  >
+    <div class="flex justify-between items-center mb-3">
+      <h1 class="font-semibold text-xl">{{ isEdit? 'Update Category':'Add New Category' }}</h1>
+      <button matIconButton (click)="closeModal()" class="!text-white"><mat-icon>close</mat-icon></button>
+    </div>
+    <form (ngSubmit)="onSubmit()">
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">Category Name</h1>
+        <mat-form-field class="w-full">
+          <mat-label>Enter Category Name</mat-label>
+          <input matInput name="name" [(ngModel)]="categoryData.name">
+        </mat-form-field>
+      </div>
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">Category Description</h1>
+        <mat-form-field class="w-full">
+          <mat-label>Enter Category Description</mat-label>
+          <textarea matInput name="description" [(ngModel)]="categoryData.description"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="flex justify-right mt-3">
+        <button mat-flat-button class="w-full" type="submit">
+          {{ isEdit? 'Update':'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

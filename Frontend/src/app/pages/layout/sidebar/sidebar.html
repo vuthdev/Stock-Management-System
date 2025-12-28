@@ -1,0 +1,55 @@
+<div class="bg-neutral-800 h-screen p-3 flex flex-col transition-all duration-300 ease-in-out">
+  <div class="flex justify-center items-center p-3 rounded-xl select-none">
+    <img priority ngSrc="/LOGO.jpg" alt="First Step IT" width="150" height="150">
+  </div>
+
+  <div class="h-full flex flex-col justify-between">
+    <div class="mt-5 mb-2">
+      <ul>
+        @for (data of navData; track data.text) {
+          <li class="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-700/30 cursor-pointer mb-1 transition-all"
+              [routerLink]="data.link"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <a class="flex items-center">
+              <div class="p-1 flex justify-center items-center">
+                <mat-icon class="scale-100" [fontIcon]="data.icon"></mat-icon>
+              </div>
+                <span
+                  class="ml-3 text-sm"
+                >
+                  {{ data.text }}
+                </span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+    @if (currentUser$ | async; as user) {
+        <div class="flex justify-between w-full bg-neutral-700 p-2 rounded-lg text-white">
+          <div class="flex items-center">
+            <img
+              [ngSrc]="user.image ? baseUrl + user.image : '/default-user.png'"
+              alt="{{ user.username }} profile"
+              width="30"
+              height="30"
+              class="rounded-full border-2 border-neutral-400 mr-2"
+            >
+            <h1 class="font-semibold">{{ user.username }}</h1>
+          </div>
+          <button
+          mat-icon-button
+          class="!text-white !w-8 !h-8 !flex !justify-center !items-center"
+          (click)="onLogout()"
+          >
+            <mat-icon class="!text-lg">logout</mat-icon>
+          </button>
+        </div>
+    } @else {
+        <div class="flex justify-center w-full bg-neutral-700 p-2 rounded-lg text-white">
+            <h1 class="font-semibold text-sm text-neutral-400">Not Logged In</h1>
+        </div>
+    }
+  </div>
+</div>

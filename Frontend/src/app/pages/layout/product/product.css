@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.btn {
+  @apply text-white p-3 rounded-xl shadow-md cursor-pointer transition-all
+}
+
+th, td{
+  @apply p-2;
+}

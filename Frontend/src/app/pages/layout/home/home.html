@@ -1,0 +1,41 @@
+<div class="p-5">
+  <div class="flex rounded-xl w-full mt-4 overflow-hidden">
+    <div class="widget rounded-l-xl">
+      <mat-icon class="product">inventory</mat-icon>
+      <h1 class="font-semibold text-neutral-400 uppercase text-md">Products</h1>
+      @if (isLoading.products) {
+        <mat-spinner></mat-spinner>
+      }
+      <h1 class="font-semibold text-white uppercase text-3xl">{{ products.total }}</h1>
+    </div>
+    <div class="widget">
+      <mat-icon class="product">local_offer</mat-icon>
+      <h1 class="font-semibold text-neutral-400 uppercase text-md">Categories</h1>
+      @if (isLoading.category) {
+        <mat-spinner></mat-spinner>
+      }
+      <h1 class="font-semibold text-white uppercase text-3xl">{{ categories }}</h1>
+    </div>
+    <div class="widget">
+      <mat-icon class="product">groups</mat-icon>
+      <h1 class="font-semibold text-neutral-400 uppercase text-md">Users</h1>
+      @if (isLoading.user) {
+        <mat-spinner></mat-spinner>
+      }
+      <h1 class="font-semibold text-white uppercase text-3xl">{{ user }}</h1>
+    </div>
+    <div class="widget rounded-r-xl">
+      <mat-icon class="product">shopping_cart</mat-icon>
+      <h1 class="font-semibold text-neutral-400 uppercase text-md">Orders</h1>
+      @if (isLoading.order) {
+        <mat-spinner></mat-spinner>
+      }
+      <h1 class="font-semibold text-white uppercase text-3xl">{{ order }}</h1>
+    </div>
+  </div>
+
+  <div class="bg-neutral-800 p-6 rounded-2xl shadow-lg max-w-5xl mx-auto mt-10">
+    <h2 class="text-xl font-semibold text-white mb-4">Orders Chart</h2>
+    <canvas id="barChart"></canvas>
+  </div>
+</div>

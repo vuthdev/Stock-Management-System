@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+.btn {
+  @apply text-white p-3 rounded-xl shadow-md cursor-pointer transition-all
+}
+
+th, td{
+  @apply p-2;
+}
+
+.btn-edit {
+  @apply bg-blue-500 hover:bg-blue-600/10;
+}
+.btn-delete {
+  @apply bg-red-600 hover:bg-red-600/10;
+}

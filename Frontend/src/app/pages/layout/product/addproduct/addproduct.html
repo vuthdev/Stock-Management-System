@@ -1,0 +1,72 @@
+<div class="motion-duration-300 fixed flex justify-center items-center h-full w-full bg-black/30 inset-0 z-50"
+     [ngClass]="{
+    'motion-opacity-in-0': !isClosing,
+    'motion-opacity-out-0': isClosing
+  }"
+>
+  <div class="motion-duration-300 bg-neutral-800 text-white p-5 rounded-xl h-auto w-200"
+       [ngClass]="{
+      'motion-translate-y-in-50 motion-opacity-in-0 motion-scale-in-10': !isClosing,
+      'motion-translate-y-out-50 motion-opacity-out-0 motion-scale-out-90': isClosing
+    }"
+  >
+    <div class="flex justify-between items-center mb-3">
+      <h1 class="font-semibold text-xl">{{ isEdit? 'Update Product':'Add New Product' }}</h1>
+      <button matIconButton (click)="closeModal()" class="!text-white"><mat-icon fontIcon="close"></mat-icon></button>
+    </div>
+    <form (ngSubmit)="onSubmit()">
+      <div class="flex justify-between">
+        <div class="mb-2 mr-2 w-full">
+          <h1 class="text-md font-semibold mb-1">Product Name</h1>
+          <mat-form-field class="w-full">
+            <mat-label>Enter name</mat-label>
+            <input matInput placeholder="Ex. IPhone 17 Pro Max 17 2T" [(ngModel)]="productData.name" name="name">
+          </mat-form-field>
+        </div>
+
+        <div class="mb-2 w-full">
+          <h1 class="text-md font-semibold mb-1">Category</h1>
+          <mat-form-field class="w-full">
+            <mat-label>Choose your option</mat-label>
+            <mat-select name="category_id" [(ngModel)]="productData.category_id">
+              @for (c of categories; track c._id) {
+                <mat-option [value]="c._id">{{c.name}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <div class="mb-2 mr-2 w-full">
+          <h1 class="text-md font-semibold mb-1">Price</h1>
+          <mat-form-field class="w-full">
+            <mat-label>Enter Price</mat-label>
+            <input matInput type="number" min="0" [(ngModel)]="productData.price" name="price">
+          </mat-form-field>
+        </div>
+
+        <div class="mb-2 w-full">
+          <h1 class="text-md font-semibold mb-1">Stock</h1>
+          <mat-form-field class="w-full">
+            <mat-label>Enter Stock</mat-label>
+            <input matInput type="number" min="0" [(ngModel)]="productData.stock" name="stock">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <h1 class="text-md font-semibold mb-1">description</h1>
+        <mat-form-field class="w-full">
+          <mat-label>Enter description</mat-label>
+          <textarea matInput placeholder="Ex. It makes me feel..." [(ngModel)]="productData.description" name="description"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="flex justify-center mt-3">
+        <button type="submit" mat-flat-button class="w-full">
+          {{ isEdit? 'Update':'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

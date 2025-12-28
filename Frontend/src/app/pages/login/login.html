@@ -1,0 +1,48 @@
+<div class="flex justify-center items-center bg-neutral-800 h-screen w-screen">
+  <div class="flex flex-col justify-center items-center bg-neutral-700 rounded-lg p-6 w-[450px]">
+    <div class="flex justify-center items-center bg-neutral-500 rounded-xl w-15 h-15">
+      <mat-icon class="!text-white scale-150">login</mat-icon>
+    </div>
+    <h1 class="font-medium text-2xl text-white mt-5 mb-2">Sign in</h1>
+    <p class="text-neutral-400">Best Stock Management System in the world</p>
+    <div class="mt-5 w-full">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full">
+
+        <mat-form-field class="w-full">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" type="text">
+          @if (loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched) {
+            <mat-error>Username is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password">
+          @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+            <mat-error>Password is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-button
+          class="w-full !bg-blue-500 mt-3"
+          type="submit"
+          [disabled]="isLoading || loginForm.invalid"
+        >
+          {{ isLoading ? 'Checking...' : 'Login' }}
+        </button>
+
+        @if (errorMessage) {
+          <p class="text-red-400 mt-2 text-sm text-center">
+            {{ errorMessage }}
+          </p>
+        }
+      </form>
+    </div>
+    <p class="text-neutral-400 text-sm mt-3">
+      Don't have an account?
+      <a routerLink="/register" class="text-blue-400 hover:underline">Sign up</a>
+    </p>
+  </div>
+</div>

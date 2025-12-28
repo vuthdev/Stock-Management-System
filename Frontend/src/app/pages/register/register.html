@@ -1,0 +1,60 @@
+<div class="flex justify-center items-center bg-neutral-800 h-screen w-screen">
+  <div class="flex flex-col justify-center items-center bg-neutral-700 rounded-lg p-6 w-[450px]">
+    <div class="flex justify-center items-center bg-neutral-500 rounded-xl w-15 h-15">
+      <mat-icon class="!text-white scale-150">person_add</mat-icon>
+    </div>
+
+    <h1 class="font-medium text-2xl text-white mt-5 mb-2">Sign up</h1>
+    <p class="text-neutral-400 text-center">Create your account to start using the system</p>
+
+    <div class="mt-5 w-full">
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="w-full">
+        <mat-form-field class="w-full">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email">
+        </mat-form-field>
+
+        <label class="text-neutral-300 mb-1 block">Gender</label>
+        <mat-radio-group formControlName="gender" class="flex gap-4 mb-3 text-white">
+          <mat-radio-button value="Male">Male</mat-radio-button>
+          <mat-radio-button value="Female">Female</mat-radio-button>
+        </mat-radio-group>
+
+        <mat-form-field class="w-full">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password">
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput formControlName="confirmPassword" type="password">
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          class="w-full !bg-blue-500 mt-3"
+          type="submit"
+          [disabled]="isLoading"
+        >
+          {{ isLoading ? 'Registering...' : 'Sign up' }}
+        </button>
+
+        @if (errorMessage) {
+          <p class="text-red-400 mt-2 text-sm text-center">
+            {{ errorMessage }}
+          </p>
+        }
+      </form>
+    </div>
+
+    <p class="text-neutral-400 text-sm mt-3">
+      Already have an account?
+      <a routerLink="/login" class="text-blue-400 hover:underline">Sign in</a>
+    </p>
+  </div>
+</div>
