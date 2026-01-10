@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+/* Product specific styles */
+.p-button-gradient {
+  background: linear-gradient(135deg, rgb(59 130 246) 0%, rgb(99 102 241) 100%) !important;
+  border: none !important;
+}
+
+.p-button-gradient:hover {
+  background: linear-gradient(135deg, rgb(37 99 235) 0%, rgb(79 70 229) 100%) !important;
+}
+
+/* Stock status colors */
+.stock-high {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: rgb(74, 222, 128) !important;
+}
+
+.stock-low {
+  background: rgba(234, 179, 8, 0.2) !important;
+  color: rgb(250, 204, 21) !important;
+}
+
+.stock-out {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: rgb(248, 113, 113) !important;
+}
+
+/* Price styling */
+.price-cell {
+  font-family: 'Inter', monospace;
+  font-weight: 600;
+}
+
+/* Category tags */
+.p-tag {
+  border-radius: 20px !important;
+  padding: 0.25rem 1rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+  .p-datatable .p-datatable-thead > tr > th:nth-child(4),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(4),
+  .p-datatable .p-datatable-thead > tr > th:nth-child(5),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(5) {
+    display: none !important;
+  }
+}
+
+/* Line clamp for description */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Modal specific styles for product form */
+.p-inputnumber-input {
+  background: rgba(31, 41, 55, 0.5) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  color: white !important;
+}
+
+.p-dropdown {
+  background: rgba(31, 41, 55, 0.5) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+}
+
+.p-dropdown .p-dropdown-label {
+  color: white !important;
+}
+
+.p-dropdown-panel {
+  background: rgb(31 41 55) !important;
+  border: 1px solid rgb(75 85 99) !important;
+}
+
+.p-dropdown-item {
+  color: rgb(209 213 219) !important;
+}
+
+.p-dropdown-item:hover {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: white !important;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}

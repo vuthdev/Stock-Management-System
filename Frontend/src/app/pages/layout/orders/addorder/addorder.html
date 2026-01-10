@@ -1,0 +1,275 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  [ngClass]="{
+    'bg-black/0 pointer-events-none': isClosing,
+    'bg-black/50 backdrop-blur-sm': !isClosing
+  }"
+  [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'"
+>
+  <!-- Modal Container -->
+  <div
+    class="w-full max-w-2xl max-h-[90vh]"
+    [ngClass]="{
+      'opacity-0 scale-95 translate-y-4': isClosing,
+      'opacity-100 scale-100 translate-y-0': !isClosing
+    }"
+    [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'"
+  >
+    <!-- Modal Card -->
+    <div
+      class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden backdrop-blur-xl flex flex-col max-h-[90vh]"
+    >
+      <!-- Header -->
+      <div
+        class="relative p-6 border-b border-gray-700/50 bg-gradient-to-r from-amber-600/10 to-orange-600/10 shrink-0"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+              <i
+                class="pi"
+                [ngClass]="isEdit ? 'pi-pencil text-orange-400' : 'pi-plus-circle text-amber-400'"
+              ></i>
+            </div>
+            <div>
+              <h1 class="font-bold text-white text-xl">
+                {{ isEdit ? 'Update Order' : 'Create New Order' }}
+              </h1>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ isEdit ? 'Modify order details' : 'Create a new customer order' }}
+              </p>
+            </div>
+          </div>
+          <button
+            pButton
+            icon="pi pi-times"
+            class="p-button-text p-button-rounded p-button-sm !text-gray-400 hover:!text-white hover:bg-gray-700/50"
+            (click)="closeModal()"
+            pTooltip="Close"
+            tooltipPosition="bottom"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form (ngSubmit)="onSubmit()" class="p-6 space-y-6 overflow-y-auto flex-1">
+        <!-- Customer Selection -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-user text-amber-400"></i>
+              Select Customer
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <p-select
+                [options]="users"
+                [(ngModel)]="formData.userId"
+                name="userId"
+                optionLabel="username"
+                optionValue="id"
+                placeholder="Select a customer"
+                class="w-full"
+                [ngClass]="{ 'p-invalid': formSubmitted && !formData.userId }"
+              >
+                <ng-template pTemplate="value" let-value>
+                  @if (value) {
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-user text-amber-400"></i>
+                      <span>{{ value.username }}</span>
+                    </div>
+                  } @else {
+                    <span class="text-gray-500">Select a customer</span>
+                  }
+                </ng-template>
+                <ng-template let-user pTemplate="item">
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-user text-gray-400"></i>
+                    <div>
+                      <span>{{ user.username }}</span>
+                      <span class="text-xs text-gray-500 block">{{ user.email }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            @if (formSubmitted && !formData.userId) {
+              <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i>
+                Please select a customer
+              </small>
+            }
+          </label>
+        </div>
+
+        <!-- Order Items Section -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-gray-300 flex items-center gap-2">
+              <i class="pi pi-shopping-cart text-amber-400"></i>
+              Order Items
+            </span>
+            <button
+              type="button"
+              pButton
+              icon="pi pi-plus"
+              label="Add Item"
+              severity="secondary"
+              size="small"
+              (click)="addItem()"
+            ></button>
+          </div>
+
+          <!-- Order Items List -->
+          @for (item of formData.items; track $index; let i = $index) {
+            <div class="p-4 rounded-xl border border-gray-700/50 bg-gray-800/30 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-400 font-medium">Item #{{ i + 1 }}</span>
+                @if (formData.items.length > 1) {
+                  <button
+                    type="button"
+                    pButton
+                    icon="pi pi-times"
+                    class="p-button-text p-button-rounded p-button-sm !text-red-400"
+                    (click)="removeItem(i)"
+                    pTooltip="Remove item"
+                  ></button>
+                }
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Product Selection -->
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Product *</label>
+                  <p-select
+                    [options]="products"
+                    [(ngModel)]="item.productId"
+                    name="productId{{i}}"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="Select product"
+                    class="w-full"
+                    (onChange)="onProductChange(i)"
+                  >
+                    <ng-template pTemplate="item" let-product>
+                      <div class="flex items-center justify-between w-full">
+                        <div>
+                          <span>{{ product.name }}</span>
+                          <span class="text-xs text-gray-500 block">
+                            {{ product.price | currency }} • Stock: {{ product.stock }}
+                          </span>
+                        </div>
+                        @if (product.stock < 5) {
+                          <p-tag value="Low Stock" severity="warn" styleClass="text-xs"></p-tag>
+                        }
+                      </div>
+                    </ng-template>
+                  </p-select>
+                </div>
+
+                <!-- Quantity -->
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Quantity *</label>
+                  <div class="flex items-center gap-2">
+                    <p-inputNumber
+                      [(ngModel)]="item.quantity"
+                      name="quantity{{i}}"
+                      [min]="1"
+                      [max]="getMaxQuantity(i)"
+                      placeholder="Qty"
+                      class="flex-1"
+                      inputStyleClass="w-full bg-gray-800/50 border-gray-700 text-white"
+                      (onInput)="calculateItemTotal(i)"
+                    ></p-inputNumber>
+                    @if (item.productId) {
+                      <span class="text-xs text-gray-500">
+                        Max: {{ getMaxQuantity(i) }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Item Details -->
+              @if (item.productId) {
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs text-gray-400 mb-1">Unit Price</label>
+                    <div class="p-2 rounded-lg bg-gray-800/50 text-gray-300">
+                      {{ getProductPrice(i) | currency }}
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs text-gray-400 mb-1">Item Total</label>
+                    <div class="p-2 rounded-lg bg-emerald-900/20 text-emerald-300 font-semibold">
+                      {{ calculateItemTotal(i) | currency }}
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Order Summary -->
+        <div class="p-4 rounded-xl border border-gray-700/50 bg-gray-800/30">
+          <div class="space-y-3">
+            <p class="text-sm font-semibold text-gray-300 mb-2">Order Summary</p>
+
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-sm">Items Subtotal</span>
+                <span class="font-medium text-white">{{ calculateSubtotal() | currency }}</span>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-sm">Tax (10%)</span>
+                <span class="font-medium text-white">{{ calculateTax() | currency }}</span>
+              </div>
+
+              <div class="pt-2 border-t border-gray-700">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg font-semibold text-white">Total Amount</span>
+                  <span class="text-2xl font-bold text-emerald-400">{{ calculateTotal() | currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-3 pt-4 border-t border-gray-700/50">
+          <button
+            pButton
+            type="button"
+            label="Cancel"
+            icon="pi pi-times"
+            (click)="closeModal()"
+            class="p-button-outlined p-button-secondary flex-1"
+            [disabled]="isSubmitting"
+          ></button>
+          <button
+            pButton
+            type="submit"
+            [label]="isEdit ? 'Update Order' : 'Create Order'"
+            [icon]="isEdit ? 'pi pi-save' : 'pi pi-check'"
+            class="p-button-gradient p-button-raised flex-1"
+            [loading]="isSubmitting"
+            [disabled]="isSubmitting || !hasValidItems()"
+          ></button>
+        </div>
+
+        <!-- Validation Messages -->
+        @if (!hasValidItems()) {
+          <div class="p-3 rounded-lg bg-red-900/20 border border-red-700/30">
+            <p class="text-sm text-red-300 flex items-center gap-2">
+              <i class="pi pi-exclamation-triangle"></i>
+              Please add at least one valid item to the order
+            </p>
+          </div>
+        }
+      </form>
+    </div>
+  </div>
+</div>

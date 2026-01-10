@@ -1,0 +1,359 @@
+<div class="p-6 min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-x-hidden">
+  <!-- Dashboard Header -->
+  <div class="mb-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="font-bold text-white text-3xl tracking-tight">Dashboard Overview</h1>
+        <p class="text-gray-400 text-sm mt-2">
+          Welcome back! Here's what's happening with your store today.
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <p-button
+          icon="pi pi-calendar"
+          label="Today"
+          severity="secondary"
+          [outlined]="true"
+          styleClass="p-button-sm"
+        >
+        </p-button>
+        <p-button
+          icon="pi pi-download"
+          label="Export Report"
+          severity="help"
+          [outlined]="true"
+          styleClass="p-button-sm"
+        >
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Widgets Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Products Widget -->
+    <div
+      class="bg-gradient-to-br from-blue-900/30 to-blue-800/30 rounded-2xl p-6 border border-blue-700/30 shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20">
+          <i class="pi pi-box text-blue-400 text-xl"></i>
+        </div>
+        <span class="text-xs font-semibold text-blue-300 bg-blue-500/10 px-3 py-1 rounded-full">
+          +{{ productGrowth }}% this month
+        </span>
+      </div>
+      <div class="mb-2">
+        <p class="text-gray-400 text-sm font-medium mb-1">Total Products</p>
+        @if (isLoading.products) {
+        <div class="h-10 flex items-center">
+          <p-progressSpinner styleClass="w-6 h-6" strokeWidth="4"></p-progressSpinner>
+        </div>
+        } @else {
+        <h2 class="text-3xl font-bold text-white">{{ products }}</h2>
+        }
+      </div>
+      <div class="pt-4 border-t border-blue-700/30">
+        <p class="text-xs text-blue-400/70 flex items-center gap-1">
+          <i class="pi pi-chart-line"></i>
+          {{ lowStockCount }} products low in stock
+        </p>
+      </div>
+    </div>
+
+    <!-- Categories Widget -->
+    <div
+      class="bg-gradient-to-br from-purple-900/30 to-purple-800/30 rounded-2xl p-6 border border-purple-700/30 shadow-xl hover:shadow-purple-500/10 transition-all duration-300"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20">
+          <i class="pi pi-tags text-purple-400 text-xl"></i>
+        </div>
+        <span class="text-xs font-semibold text-purple-300 bg-purple-500/10 px-3 py-1 rounded-full">
+          Organized
+        </span>
+      </div>
+      <div class="mb-2">
+        <p class="text-gray-400 text-sm font-medium mb-1">Categories</p>
+        @if (isLoading.category) {
+        <div class="h-10 flex items-center">
+          <p-progressSpinner styleClass="w-6 h-6" strokeWidth="4"></p-progressSpinner>
+        </div>
+        } @else {
+        <h2 class="text-3xl font-bold text-white">{{ categories }}</h2>
+        }
+      </div>
+      <div class="pt-4 border-t border-purple-700/30">
+        <p class="text-xs text-purple-400/70 flex items-center gap-1">
+          <i class="pi pi-folder"></i>
+          Product organization
+        </p>
+      </div>
+    </div>
+
+    <!-- Users Widget -->
+    <div
+      class="bg-gradient-to-br from-teal-900/30 to-teal-800/30 rounded-2xl p-6 border border-teal-700/30 shadow-xl hover:shadow-teal-500/10 transition-all duration-300"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 rounded-xl bg-gradient-to-br from-teal-500/20 to-teal-600/20">
+          <i class="pi pi-users text-teal-400 text-xl"></i>
+        </div>
+        <span class="text-xs font-semibold text-teal-300 bg-teal-500/10 px-3 py-1 rounded-full">
+          +{{ userGrowth }} active
+        </span>
+      </div>
+      <div class="mb-2">
+        <p class="text-gray-400 text-sm font-medium mb-1">Total Users</p>
+        @if (isLoading.user) {
+        <div class="h-10 flex items-center">
+          <p-progressSpinner styleClass="w-6 h-6" strokeWidth="4"></p-progressSpinner>
+        </div>
+        } @else {
+        <h2 class="text-3xl font-bold text-white">{{ user }}</h2>
+        }
+      </div>
+      <div class="pt-4 border-t border-teal-700/30">
+        <p class="text-xs text-teal-400/70 flex items-center gap-1">
+          <i class="pi pi-shield"></i>
+          {{ adminCount }} administrators
+        </p>
+      </div>
+    </div>
+
+    <!-- Orders Widget -->
+    <div
+      class="bg-gradient-to-br from-amber-900/30 to-amber-800/30 rounded-2xl p-6 border border-amber-700/30 shadow-xl hover:shadow-amber-500/10 transition-all duration-300"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/20">
+          <i class="pi pi-shopping-cart text-amber-400 text-xl"></i>
+        </div>
+        <span class="text-xs font-semibold text-amber-300 bg-amber-500/10 px-3 py-1 rounded-full">
+          +{{ orderGrowth }}% today
+        </span>
+      </div>
+      <div class="mb-2">
+        <p class="text-gray-400 text-sm font-medium mb-1">Total Orders</p>
+        @if (isLoading.order) {
+        <div class="h-10 flex items-center">
+          <p-progressSpinner styleClass="w-6 h-6" strokeWidth="4"></p-progressSpinner>
+        </div>
+        } @else {
+        <h2 class="text-3xl font-bold text-white">{{ order }}</h2>
+        }
+      </div>
+      <div class="pt-4 border-t border-amber-700/30">
+        <p class="text-xs text-amber-400/70 flex items-center gap-1">
+          <i class="pi pi-money-bill"></i>
+          {{ totalRevenue | currency }} revenue
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts and Analytics Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Left Column - Chart and Top Products -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Revenue Chart -->
+      <div
+        class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-700/50 shadow-xl"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white mb-1">Revenue Overview</h2>
+            <p class="text-sm text-gray-400">Monthly revenue trends</p>
+          </div>
+          <p-select
+            [options]="chartRanges"
+            [(ngModel)]="selectedRange"
+            (onChange)="onRangeChange()"
+            optionLabel="label"
+            styleClass="w-32"
+          >
+            <ng-template pTemplate="value" let-value>
+              @if (value) {
+                <span class="text-sm text-white">{{ value.label }}</span>
+              } @else {
+                <span class="text-sm text-gray-500">Select range</span>
+              }
+            </ng-template>
+            <ng-template let-option pTemplate="item">
+              <div class="flex items-center justify-between w-full">
+                <span class="text-sm">{{ option.label }}</span>
+                <span class="text-xs text-gray-500">{{ option.value }} days</span>
+              </div>
+            </ng-template>
+          </p-select>
+        </div>
+        <div class="h-80">
+          <p-chart class="text-white" height="300px" type="line" [data]="revenueChartData" [options]="chartOptions"></p-chart>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div
+        class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-700/50 shadow-xl"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white mb-1">Top Products</h2>
+            <p class="text-sm text-gray-400">Best selling items</p>
+          </div>
+          <i class="pi pi-star-fill text-yellow-400"></i>
+        </div>
+        <div class="space-y-4">
+          @for (product of topProducts; track product.id; let i = $index) {
+          <div
+            class="flex items-center justify-between p-3 rounded-xl bg-gray-800/30 hover:bg-gray-800/50 transition-colors"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center"
+              >
+                <i class="pi pi-box text-blue-300"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-white">{{ product.name }}</p>
+                <p class="text-xs text-gray-400">{{ product.sold }} units sold</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-bold text-emerald-400">{{ product.revenue | currency }}</p>
+              <p class="text-xs text-gray-500">{{ product.growth }}% growth</p>
+            </div>
+          </div>
+          }
+        </div>
+        @if (topProducts.length === 0) {
+        <div class="text-center py-8">
+          <i class="pi pi-chart-bar text-3xl text-gray-500 mb-3"></i>
+          <p class="text-gray-400">No sales data available</p>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right Column - Recent Activity & Quick Stats -->
+    <div class="space-y-6">
+      <!-- Recent Orders -->
+      <div
+        class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-700/50 shadow-xl"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white mb-1">Recent Orders</h2>
+            <p class="text-sm text-gray-400">Latest customer transactions</p>
+          </div>
+          <p-button label="View All" icon="pi pi-arrow-right" [text]="true" severity="secondary">
+          </p-button>
+        </div>
+        <div class="overflow-x-auto">
+          <p-table
+            [value]="recentOrders"
+            styleClass="p-datatable-sm"
+            [tableStyle]="{ 'min-width': '40rem' }"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="text-left">Order ID</th>
+                <th class="text-left">Customer</th>
+                <th class="text-left">Amount</th>
+                <th class="text-left">Status</th>
+                <th class="text-left">Date</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-order>
+              <tr class="hover:bg-gray-800/30">
+                <td class="font-mono text-sm">#{{ order.id }}</td>
+                <td>{{ order.customer }}</td>
+                <td class="font-semibold text-emerald-400">{{ order.amount | currency }}</td>
+                <td>
+                  <p-tag
+                    [value]="order.status"
+                    [severity]="getStatusSeverity(order.status)"
+                    styleClass="px-3 py-1 text-xs"
+                  >
+                  </p-tag>
+                </td>
+                <td class="text-gray-400 text-sm">{{ order.date }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div
+        class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-700/50 shadow-xl"
+      >
+        <div class="mb-6">
+          <h2 class="text-lg font-bold text-white mb-1">Quick Stats</h2>
+          <p class="text-sm text-gray-400">Store performance metrics</p>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-800/30">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center"
+              >
+                <i class="pi pi-check-circle text-green-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Conversion Rate</p>
+                <p class="text-lg font-bold text-white">{{ conversionRate }}%</p>
+              </div>
+            </div>
+            <p-tag value="+2.5%" severity="success" styleClass="px-3"></p-tag>
+          </div>
+
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-800/30">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center"
+              >
+                <i class="pi pi-shopping-bag text-blue-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Avg. Order Value</p>
+                <p class="text-lg font-bold text-white">{{ averageOrderValue | currency }}</p>
+              </div>
+            </div>
+            <p-tag value="+5.1%" severity="success" styleClass="px-3"></p-tag>
+          </div>
+
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-800/30">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500/20 to-pink-500/20 flex items-center justify-center"
+              >
+                <i class="pi pi-exclamation-triangle text-red-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Low Stock Items</p>
+                <p class="text-lg font-bold text-white">{{ lowStockCount }}</p>
+              </div>
+            </div>
+            <p-tag value="Attention" severity="danger" styleClass="px-3"></p-tag>
+          </div>
+
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-800/30">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center"
+              >
+                <i class="pi pi-users text-purple-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">New Customers</p>
+                <p class="text-lg font-bold text-white">{{ newCustomers }}</p>
+              </div>
+            </div>
+            <p-tag value="+12" severity="info" styleClass="px-3"></p-tag>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

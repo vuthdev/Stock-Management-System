@@ -1,0 +1,368 @@
+@if (isModalOpen) {
+  <app-addproduct (close)="closeModal()" [isEdit]="isEdit" [productData]="currentProduct"></app-addproduct>
+}
+
+<div class="flex p-4 h-auto w-full min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  <div class="relative rounded-2xl p-6 w-full bg-gray-900/50 backdrop-blur-xl shadow-2xl border border-gray-700/50">
+
+    <!-- Loading Overlay -->
+    @if(isLoading) {
+      <div class="absolute inset-0 z-50 flex flex-col justify-center items-center bg-gray-900/90 backdrop-blur-md rounded-2xl">
+        <p-progressSpinner
+          styleClass="w-16 h-16"
+          strokeWidth="4"
+          animationDuration=".8s"
+          fill="transparent">
+        </p-progressSpinner>
+        <p class="mt-4 text-gray-300 font-medium">Loading products...</p>
+      </div>
+    }
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 p-6 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 rounded-2xl border border-gray-700/50 shadow-lg">
+      <div class="mb-4 md:mb-0">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+            <i class="pi pi-shopping-bag text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-white text-3xl tracking-tight">Product Management</h1>
+            <p class="text-gray-400 text-sm mt-1">Manage your product inventory and details</p>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mt-4 w-full md:w-96">
+          <p-iconField iconPosition="left" class="w-full">
+            <p-inputIcon class="pi pi-search text-gray-500"></p-inputIcon>
+            <input
+              pInputText
+              [(ngModel)]="searchTerm"
+              (input)="onSearch()"
+              placeholder="Search products by name, category, or description..."
+              class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500"
+              style="padding-left: 2.5rem;"/>
+          </p-iconField>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <p-button
+          icon="pi pi-sync"
+          [rounded]="true"
+          severity="secondary"
+          [outlined]="true"
+          [loading]="isLoading"
+          (onClick)="loadProducts()"
+          styleClass="p-button-sm shadow-md"
+          tooltip="Refresh products"
+          tooltipPosition="top">
+        </p-button>
+        <p-button
+          icon="pi pi-plus"
+          label="Add Product"
+          (onClick)="openAddModal()"
+          styleClass="p-button-gradient p-button-raised shadow-lg p-button-sm"
+          severity="primary">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card border border-gray-700/50 rounded-2xl overflow-hidden bg-gray-900/30 backdrop-blur-sm shadow-xl">
+      <p-table
+        [value]="filteredProducts"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [totalRecords]="filteredProducts.length"
+        [loading]="isLoading"
+        [lazy]="false"
+        styleClass="p-datatable-sm custom-table"
+        [tableStyle]="{'min-width': '60rem'}"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
+
+        <ng-template pTemplate="header">
+          <tr class="bg-gradient-to-r from-gray-800/80 to-gray-900/80">
+            <th pSortableColumn="name" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-box text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Product Name</span>
+                <p-sortIcon field="name"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="categoryName" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-tags text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Category</span>
+                <p-sortIcon field="categoryName"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="stock" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-cube text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Stock</span>
+                <p-sortIcon field="stock"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="price" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-money-bill text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Price</span>
+                <p-sortIcon field="price"></p-sortIcon>
+              </div>
+            </th>
+            <th class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-align-left text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Description</span>
+              </div>
+            </th>
+            <th class="p-4 text-left">
+              <span class="font-semibold text-gray-300">Actions</span>
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-product let-i="rowIndex">
+          <tr class="hover:bg-gray-800/30 transition-all duration-300 border-b border-gray-700/20 group"
+              [ngClass]="{'bg-gray-800/20': i % 2 === 0}">
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center shadow-sm">
+                  <i class="pi pi-shopping-cart text-blue-300"></i>
+                </div>
+                <div>
+                  <span class="font-medium text-white block">{{product.name}}</span>
+                  <span class="text-xs text-gray-500">ID: {{product.id}}</span>
+                </div>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <p-tag
+                  [value]="product.categoryName"
+                  severity="info"
+                  styleClass="px-3 py-1">
+                </p-tag>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <div class="relative">
+                  <div class="w-12 h-8 rounded-lg flex items-center justify-center font-semibold"
+                       [ngClass]="{
+                         'bg-green-500/20 text-green-300': product.stock > 10,
+                         'bg-yellow-500/20 text-yellow-300': product.stock > 0 && product.stock <= 10,
+                         'bg-red-500/20 text-red-300': product.stock === 0
+                       }">
+                    {{product.stock}}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    {{product.stock === 0 ? 'Out of stock' : product.stock <= 10 ? 'Low stock' : 'In stock'}}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <div class="font-bold text-white text-lg">
+                  {{product.price | currency}}
+                </div>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="max-w-md">
+                @if (product.description && product.description.trim() !== '') {
+                  <span class="text-gray-300 line-clamp-2 bg-gray-800/30 p-3 rounded-lg block">
+                    {{product.description}}
+                  </span>
+                } @else {
+                  <span class="text-gray-500 italic bg-gray-800/20 p-3 rounded-lg block">
+                    No description
+                  </span>
+                }
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex gap-2">
+                <p-button
+                  icon="pi pi-eye"
+                  [rounded]="true"
+                  severity="info"
+                  [outlined]="true"
+                  (click)="viewProduct(product)"
+                  styleClass="p-button-sm shadow-sm hover:scale-105 transition-transform"
+                  tooltip="View details"
+                  tooltipPosition="top">
+                </p-button>
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  severity="warn"
+                  (click)="openEditModal(product)"
+                  styleClass="p-button-sm shadow-sm hover:scale-105 transition-transform"
+                  tooltip="Edit product"
+                  tooltipPosition="top">
+                </p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  severity="danger"
+                  [outlined]="true"
+                  (click)="deleteProduct(product.id)"
+                  styleClass="p-button-sm shadow-sm hover:scale-105 transition-transform"
+                  tooltip="Delete product"
+                  tooltipPosition="top">
+                </p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Empty State -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="p-8 text-center">
+              <div class="flex flex-col items-center justify-center gap-6 py-12">
+                <div class="w-24 h-24 rounded-full bg-gray-800/50 flex items-center justify-center shadow-lg">
+                  <i class="pi pi-inbox text-4xl text-gray-500"></i>
+                </div>
+                <div class="text-center">
+                  <h3 class="text-2xl font-bold text-gray-300 mb-3">No Products Found</h3>
+                  <p class="text-gray-500 mb-6 max-w-md mx-auto">
+                    {{searchTerm ? 'No products match your search. Try different keywords.' : 'Get started by adding your first product to the inventory.'}}
+                  </p>
+                  @if (!searchTerm) {
+                    <p-button
+                      icon="pi pi-plus"
+                      label="Add First Product"
+                      (onClick)="openAddModal()"
+                      styleClass="p-button-gradient p-button-raised shadow-lg">
+                    </p-button>
+                  } @else {
+                    <p-button
+                      icon="pi pi-times"
+                      label="Clear Search"
+                      (onClick)="clearSearch()"
+                      severity="secondary"
+                      [outlined]="true">
+                    </p-button>
+                  }
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Loading Template -->
+        <ng-template pTemplate="loadingbody">
+          <tr>
+            <td colspan="6" class="p-8 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <p-progressSpinner
+                  styleClass="w-8 h-8"
+                  strokeWidth="3">
+                </p-progressSpinner>
+                <span class="text-gray-400">Loading products...</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+      <div class="bg-gradient-to-br from-blue-900/30 to-blue-800/30 p-5 rounded-2xl border border-blue-700/30 shadow-lg hover:shadow-blue-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-blue-300 text-sm font-medium mb-1">Total Products</p>
+            <p class="text-3xl font-bold text-white">{{resultsLength}}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-blue-500/20">
+            <i class="pi pi-box text-2xl text-blue-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-blue-700/30">
+          <p class="text-xs text-blue-400/70">All products in inventory</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-green-900/30 to-green-800/30 p-5 rounded-2xl border border-green-700/30 shadow-lg hover:shadow-green-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-green-300 text-sm font-medium mb-1">Total Stock</p>
+            <p class="text-3xl font-bold text-white">{{totalStock}}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-green-500/20">
+            <i class="pi pi-cubes text-2xl text-green-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-green-700/30">
+          <p class="text-xs text-green-400/70">Units across all products</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-5 rounded-2xl border border-purple-700/30 shadow-lg hover:shadow-purple-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-purple-300 text-sm font-medium mb-1">Total Value</p>
+            <p class="text-3xl font-bold text-white">{{totalValue | currency}}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-purple-500/20">
+            <i class="pi pi-wallet text-2xl text-purple-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-purple-700/30">
+          <p class="text-xs text-purple-400/70">Inventory value</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-orange-900/30 to-orange-800/30 p-5 rounded-2xl border border-orange-700/30 shadow-lg hover:shadow-orange-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-orange-300 text-sm font-medium mb-1">Out of Stock</p>
+            <p class="text-3xl font-bold text-white">{{outOfStockCount}}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-orange-500/20">
+            <i class="pi pi-exclamation-triangle text-2xl text-orange-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-orange-700/30">
+          <p class="text-xs text-orange-400/70">Products needing restock</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Footer -->
+    <div class="mt-8 pt-6 border-t border-gray-700/50">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="text-sm text-gray-500">
+          <i class="pi pi-info-circle mr-2"></i>
+          Showing {{filteredProducts.length}} of {{resultsLength}} total products
+        </div>
+        <div class="flex gap-3">
+          <p-button
+            icon="pi pi-download"
+            label="Export"
+            severity="secondary"
+            [outlined]="true"
+            styleClass="p-button-sm"
+            (onClick)="exportData()">
+          </p-button>
+          <p-button
+            icon="pi pi-print"
+            label="Print"
+            severity="secondary"
+            [outlined]="true"
+            styleClass="p-button-sm"
+            (onClick)="printTable()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

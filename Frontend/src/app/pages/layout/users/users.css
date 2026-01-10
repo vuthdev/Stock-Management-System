@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* User Management Specific Styles */
+.p-button-gradient {
+  background: linear-gradient(135deg, rgb(20 184 166) 0%, rgb(5 150 105) 100%) !important;
+  border: none !important;
+}
+
+.p-button-gradient:hover {
+  background: linear-gradient(135deg, rgb(13 148 136) 0%, rgb(4 120 87) 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.3) !important;
+}
+
+/* Profile image styling */
+.profile-avatar {
+  transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Gender buttons */
+.gender-male {
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgb(59, 130, 246) !important;
+  color: rgb(96, 165, 250) !important;
+}
+
+.gender-female {
+  background: rgba(236, 72, 153, 0.1) !important;
+  border-color: rgb(236, 72, 153) !important;
+  color: rgb(244, 114, 182) !important;
+}
+
+/* Role badges */
+.role-admin {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: rgb(248, 113, 113) !important;
+}
+
+.role-user {
+  background: rgba(34, 197, 94, 0.1) !important;
+  color: rgb(74, 222, 128) !important;
+}
+
+/* File upload area */
+.file-upload-area {
+  transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+  border-color: rgb(20, 184, 166) !important;
+  background: rgba(20, 184, 166, 0.05) !important;
+}
+
+.file-upload-area.dragging {
+  border-color: rgb(20, 184, 166) !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .p-datatable .p-datatable-thead > tr > th:nth-child(3),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(3),
+  .p-datatable .p-datatable-thead > tr > th:nth-child(5),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(5) {
+    display: none !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* SweetAlert customization */
+.swal2-confirm-btn {
+  background: linear-gradient(135deg, rgb(20 184 166) 0%, rgb(5 150 105) 100%) !important;
+  border: none !important;
+  padding: 12px 28px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+}
+
+.swal2-confirm-btn:hover {
+  background: linear-gradient(135deg, rgb(13 148 136) 0%, rgb(4 120 87) 100%) !important;
+}

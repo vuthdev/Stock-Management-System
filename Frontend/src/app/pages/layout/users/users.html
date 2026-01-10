@@ -1,0 +1,334 @@
+@if (isModalOpen) {
+  <app-adduser (close)="closeModal()" [isEdit]="isEdit" [userData]="currentUser"></app-adduser>
+}
+
+<div class="flex p-4 h-auto w-full min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  <div class="relative rounded-2xl p-6 w-full bg-gray-900/50 backdrop-blur-xl shadow-2xl border border-gray-700/50">
+
+    <!-- Loading Overlay -->
+    @if(isLoading) {
+      <div class="absolute inset-0 z-50 flex flex-col justify-center items-center bg-gray-900/90 backdrop-blur-md rounded-2xl">
+        <p-progressSpinner
+          styleClass="w-16 h-16"
+          strokeWidth="4"
+          animationDuration=".8s"
+          fill="transparent">
+        </p-progressSpinner>
+        <p class="mt-4 text-gray-300 font-medium">Loading users...</p>
+      </div>
+    }
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 p-6 bg-gradient-to-r from-teal-600/10 via-emerald-600/10 to-green-600/10 rounded-2xl border border-gray-700/50 shadow-lg">
+      <div class="mb-4 md:mb-0">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="p-3 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg">
+            <i class="pi pi-users text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-white text-3xl tracking-tight">User Management</h1>
+            <p class="text-gray-400 text-sm mt-1">Manage user accounts and permissions</p>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mt-4 w-full md:w-96">
+          <p-iconField iconPosition="left" class="w-full">
+            <p-inputIcon class="pi pi-search text-gray-500"></p-inputIcon>
+            <input
+              pInputText
+              [(ngModel)]="searchTerm"
+              (input)="onSearch()"
+              placeholder="Search users by name, email, or role..."
+              class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500"
+              style="padding-left: 2.5rem;"/>
+          </p-iconField>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <p-button
+          icon="pi pi-sync"
+          [rounded]="true"
+          severity="secondary"
+          [outlined]="true"
+          [loading]="isLoading"
+          (onClick)="loadUsers()"
+          styleClass="p-button-sm shadow-md"
+          pTooltip="Refresh users"
+          tooltipPosition="top">
+        </p-button>
+        <p-button
+          icon="pi pi-user-plus"
+          label="Add User"
+          (onClick)="openAddModal()"
+          styleClass="p-button-gradient p-button-raised shadow-lg p-button-sm"
+          severity="success">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card border border-gray-700/50 rounded-2xl overflow-hidden bg-gray-900/30 backdrop-blur-sm shadow-xl">
+      <p-table
+        [value]="filteredUsers"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [totalRecords]="filteredUsers.length"
+        [loading]="isLoading"
+        [lazy]="false"
+        styleClass="p-datatable-sm custom-table"
+        [tableStyle]="{'min-width': '60rem'}"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users">
+
+        <ng-template pTemplate="header">
+          <tr class="bg-gradient-to-r from-gray-800/80 to-gray-900/80">
+            <th class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-image text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Profile</span>
+              </div>
+            </th>
+            <th pSortableColumn="username" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-user text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Username</span>
+                <p-sortIcon field="username"></p-sortIcon>
+              </div>
+            </th>
+            <th class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-lock text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Password</span>
+              </div>
+            </th>
+            <th pSortableColumn="email" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-envelope text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Email</span>
+                <p-sortIcon field="email"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="gender" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-venus-mars text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Gender</span>
+                <p-sortIcon field="gender"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="role" class="p-4 text-left">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-shield text-gray-400"></i>
+                <span class="font-semibold text-gray-300">Role</span>
+                <p-sortIcon field="role"></p-sortIcon>
+              </div>
+            </th>
+            <th class="p-4 text-left">
+              <span class="font-semibold text-gray-300">Actions</span>
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-user let-i="rowIndex">
+          <tr class="hover:bg-gray-800/30 transition-all duration-300 border-b border-gray-700/20 group"
+              [ngClass]="{'bg-gray-800/20': i % 2 === 0}">
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                @if (user.profileImage) {
+                  <img
+                    [src]="baseUrl + user.id + '/profileImage'"
+                    [alt]="user.username + ' profile'"
+                    class="w-12 h-12 rounded-full object-cover border-2 border-gray-300 shadow-sm"
+                    (error)="onImageError($event)"
+                    onerror="this.style.display='none'"
+                  >
+                }
+                @if (!user.profileImage || user.profileImage === '') {
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center border-2 border-gray-300 shadow-sm">
+                    <span class="text-lg font-bold text-white">
+                      {{ user.username?.charAt(0).toUpperCase() || '?' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div>
+                  <span class="font-medium text-white block">{{ user.username }}</span>
+                  <span class="text-xs text-gray-500">ID: {{ user.id }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400 font-mono text-sm">••••••••</span>
+                <i class="pi pi-eye-slash text-gray-500 text-xs" pTooltip="Password hidden for security"></i>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-envelope text-gray-400 text-sm"></i>
+                <span class="text-gray-300">{{ user.email }}</span>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                @if (user.gender === 'Male') {
+                  <p-tag value="Male" severity="info" styleClass="px-3 py-1"></p-tag>
+                } @else if (user.gender === 'Female') {
+                  <p-tag value="Female" severity="warn" styleClass="px-3 py-1"></p-tag>
+                } @else {
+                  <p-tag value="{{ user.gender || 'Not specified' }}" severity="secondary" styleClass="px-3 py-1"></p-tag>
+                }
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                @if (user.role === 'Admin') {
+                  <p-tag value="Admin" severity="danger" styleClass="px-3 py-1"></p-tag>
+                } @else {
+                  <p-tag value="{{ user.role || 'User' }}" severity="success" styleClass="px-3 py-1"></p-tag>
+                }
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex gap-2">
+                <p-button
+                  icon="pi pi-eye"
+                  [rounded]="true"
+                  severity="info"
+                  [outlined]="true"
+                  (click)="viewUser(user)"
+                  styleClass="p-button-sm shadow-sm hover:scale-105 transition-transform"
+                  pTooltip="View details"
+                  tooltipPosition="top">
+                </p-button>
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  severity="warn"
+                  (click)="openEditModal(user)"
+                  styleClass="p-button-sm shadow-sm hover:scale-105 transition-transform"
+                  pTooltip="Edit user"
+                  tooltipPosition="top">
+                </p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  severity="danger"
+                  [outlined]="true"
+                  (click)="deleteUser(user.id)"
+                  styleClass="p-button-sm shadow-sm hover:scale-105 transition-transform"
+                  pTooltip="Delete user"
+                  tooltipPosition="top">
+                </p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Empty State -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="p-8 text-center">
+              <div class="flex flex-col items-center justify-center gap-6 py-12">
+                <div class="w-24 h-24 rounded-full bg-gray-800/50 flex items-center justify-center shadow-lg">
+                  <i class="pi pi-user-slash text-4xl text-gray-500"></i>
+                </div>
+                <div class="text-center">
+                  <h3 class="text-2xl font-bold text-gray-300 mb-3">No Users Found</h3>
+                  <p class="text-gray-500 mb-6 max-w-md mx-auto">
+                    {{ searchTerm ? 'No users match your search. Try different keywords.' : 'Get started by adding your first user.' }}
+                  </p>
+                  @if (!searchTerm) {
+                    <p-button
+                      icon="pi pi-user-plus"
+                      label="Add First User"
+                      (onClick)="openAddModal()"
+                      styleClass="p-button-gradient p-button-raised shadow-lg">
+                    </p-button>
+                  } @else {
+                    <p-button
+                      icon="pi pi-times"
+                      label="Clear Search"
+                      (onClick)="clearSearch()"
+                      severity="secondary"
+                      [outlined]="true">
+                    </p-button>
+                  }
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+      <div class="bg-gradient-to-br from-teal-900/30 to-teal-800/30 p-5 rounded-2xl border border-teal-700/30 shadow-lg hover:shadow-teal-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-teal-300 text-sm font-medium mb-1">Total Users</p>
+            <p class="text-3xl font-bold text-white">{{ totalUsers }}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-teal-500/20">
+            <i class="pi pi-users text-2xl text-teal-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-teal-700/30">
+          <p class="text-xs text-teal-400/70">All registered users</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-emerald-900/30 to-emerald-800/30 p-5 rounded-2xl border border-emerald-700/30 shadow-lg hover:shadow-emerald-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-emerald-300 text-sm font-medium mb-1">Active</p>
+            <p class="text-3xl font-bold text-white">{{ activeUsers }}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-500/20">
+            <i class="pi pi-check-circle text-2xl text-emerald-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-emerald-700/30">
+          <p class="text-xs text-emerald-400/70">Currently active</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-blue-900/30 to-blue-800/30 p-5 rounded-2xl border border-blue-700/30 shadow-lg hover:shadow-blue-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-blue-300 text-sm font-medium mb-1">Male Users</p>
+            <p class="text-3xl font-bold text-white">{{ maleUsers }}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-blue-500/20">
+            <i class="pi pi-mars text-2xl text-blue-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-blue-700/30">
+          <p class="text-xs text-blue-400/70">Male gender count</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-pink-900/30 to-pink-800/30 p-5 rounded-2xl border border-pink-700/30 shadow-lg hover:shadow-pink-500/10 transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-pink-300 text-sm font-medium mb-1">Female Users</p>
+            <p class="text-3xl font-bold text-white">{{ femaleUsers }}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-pink-500/20">
+            <i class="pi pi-venus text-2xl text-pink-400"></i>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-pink-700/30">
+          <p class="text-xs text-pink-400/70">Female gender count</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

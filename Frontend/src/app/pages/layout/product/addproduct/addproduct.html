@@ -1,0 +1,343 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  [ngClass]="{
+    'bg-black/0 pointer-events-none': isClosing,
+    'bg-black/50 backdrop-blur-sm': !isClosing
+  }"
+  [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'"
+>
+  <!-- Modal Container -->
+  <div
+    class="w-full max-w-2xl max-h-[90vh]"
+    [ngClass]="{
+      'opacity-0 scale-95 translate-y-4': isClosing,
+      'opacity-100 scale-100 translate-y-0': !isClosing
+    }"
+    [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'"
+  >
+    <!-- Modal Card -->
+    <div
+      class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden backdrop-blur-xl flex flex-col max-h-[90vh]"
+    >
+      <!-- Header -->
+      <div
+        class="rrelative p-6 border-b border-gray-700/50 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 shrink-0"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20">
+              <i
+                class="pi"
+                [ngClass]="isEdit ? 'pi-pencil text-indigo-400' : 'pi-plus-circle text-blue-400'"
+              ></i>
+            </div>
+            <div>
+              <h1 class="font-bold text-white text-xl">
+                {{ isEdit ? 'Update Product' : 'Add New Product' }}
+              </h1>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ isEdit ? 'Modify product details' : 'Add a new product to inventory' }}
+              </p>
+            </div>
+          </div>
+          <button
+            pButton
+            icon="pi pi-times"
+            class="p-button-text p-button-rounded p-button-sm !text-gray-400 hover:!text-white hover:bg-gray-700/50"
+            (click)="closeModal()"
+            pTooltip="Close"
+            tooltipPosition="bottom"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form (ngSubmit)="onSubmit()" class="p-6 space-y-6 overflow-y-auto flex-1">
+        <!-- Product Name -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-box text-blue-400"></i>
+              Product Name
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <input
+                pInputText
+                [(ngModel)]="formData.name"
+                name="name"
+                placeholder="Enter product name (e.g., iPhone 15 Pro Max)"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3"
+                autocomplete="off"
+                [ngClass]="{ 'p-invalid': formSubmitted && !formData.name }"
+              />
+              <i
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              ></i>
+            </div>
+            @if (formSubmitted && !formData.name) {
+            <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle"></i>
+              Product name is required
+            </small>
+            }
+          </label>
+        </div>
+
+        <!-- Category and Price Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Category - FIXED FOR PRIMENG 21 -->
+          <div class="space-y-3">
+            <label class="block">
+              <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+                <i class="pi pi-tags text-blue-400"></i>
+                Category
+                <span class="text-red-400 ml-1">*</span>
+              </span>
+              <div class="relative">
+                <!-- CHANGED: p-select instead of p-dropdown -->
+                <p-select
+                  [options]="categories"
+                  [(ngModel)]="formData.categoryId"
+                  name="categoryId"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Select a category"
+                  class="w-full"
+                  [ngClass]="{ 'p-invalid': formSubmitted && !formData.categoryId }"
+                >
+                  <ng-template pTemplate="value" let-value>
+                    @if (value) {
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-folder text-blue-400"></i>
+                      <span>{{ value.name }}</span>
+                    </div>
+                    } @else {
+                    <span class="text-gray-500">Select a category</span>
+                    }
+                  </ng-template>
+                  <ng-template let-category pTemplate="item">
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-folder text-gray-400"></i>
+                      <span>{{ category.name }}</span>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+              @if (formSubmitted && !formData.categoryId) {
+              <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i>
+                Category is required
+              </small>
+              }
+            </label>
+          </div>
+
+          <!-- Price -->
+          <div class="space-y-3">
+            <label class="block">
+              <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+                <i class="pi pi-money-bill text-blue-400"></i>
+                Price
+                <span class="text-red-400 ml-1">*</span>
+              </span>
+              <div class="relative">
+                <p-inputNumber
+                  [(ngModel)]="formData.price"
+                  name="price"
+                  mode="currency"
+                  currency="USD"
+                  locale="en-US"
+                  placeholder="Enter price"
+                  class="w-full"
+                  inputStyleClass="w-full bg-gray-800/50 border-gray-700 text-white pl-10 py-3"
+                  [ngClass]="{
+                    'p-invalid': formSubmitted && (!formData.price || formData.price <= 0)
+                  }"
+                >
+                  <ng-template pTemplate="prefix">
+                    <i class="pi pi-dollar text-gray-500 ml-3"></i>
+                  </ng-template>
+                </p-inputNumber>
+              </div>
+              @if (formSubmitted && (!formData.price || formData.price <= 0)) {
+              <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i>
+                Valid price is required
+              </small>
+              }
+            </label>
+          </div>
+        </div>
+
+        <!-- Stock and Status Row - FIXED NULL CHECKS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Stock -->
+          <div class="space-y-3">
+            <label class="block">
+              <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+                <i class="pi pi-cube text-blue-400"></i>
+                Stock Quantity
+                <span class="text-red-400 ml-1">*</span>
+              </span>
+              <div class="relative">
+                <p-inputNumber
+                  [(ngModel)]="formData.stock"
+                  name="stock"
+                  [min]="0"
+                  placeholder="Enter stock quantity"
+                  class="w-full"
+                  inputStyleClass="w-full bg-gray-800/50 border-gray-700 text-white pl-10 py-3"
+                  [ngClass]="{
+                    'p-invalid':
+                      formSubmitted &&
+                      (formData.stock === null ||
+                        formData.stock === undefined ||
+                        formData.stock < 0)
+                  }"
+                >
+                  <ng-template pTemplate="prefix">
+                    <i class="pi pi-cubes text-gray-500 ml-3"></i>
+                  </ng-template>
+                </p-inputNumber>
+              </div>
+              @if (formSubmitted && (formData.stock === null || formData.stock === undefined ||
+              formData.stock < 0)) {
+              <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i>
+                Valid stock quantity is required
+              </small>
+              }
+            </label>
+          </div>
+
+          <!-- Stock Status Display - FIXED NULL CHECKS -->
+          <div class="space-y-3">
+            <span class="text-sm font-semibold text-gray-300 mb-2 block"> Stock Status </span>
+            <div class="p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
+              @if (formData.stock !== null && formData.stock !== undefined && formData.stock > 0) {
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center"
+                  >
+                    <i class="pi pi-check-circle text-green-400"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium text-white">In Stock</p>
+                    <p class="text-sm text-gray-400">{{ formData.stock }} units available</p>
+                  </div>
+                </div>
+                @if (formData.stock <= 10) {
+                <p-tag value="Low Stock" severity="warn" styleClass="px-3 py-1"></p-tag>
+                }
+              </div>
+              } @else if (formData.stock === 0) {
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <i class="pi pi-exclamation-triangle text-red-400"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-white">Out of Stock</p>
+                  <p class="text-sm text-gray-400">No units available</p>
+                </div>
+              </div>
+              } @else {
+              <div class="text-gray-500 italic">Enter stock quantity to see status</div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-align-left text-blue-400"></i>
+              Description
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <textarea
+                pInputTextarea
+                [(ngModel)]="formData.description"
+                name="description"
+                placeholder="Enter product description (e.g., Features, specifications, etc.)"
+                rows="4"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3 resize-none"
+                autocomplete="off"
+                [ngClass]="{ 'p-invalid': formSubmitted && !formData.description }"
+              >
+              </textarea>
+              <i class="pi pi-align-left absolute left-3 top-4 text-gray-500"></i>
+            </div>
+            @if (formSubmitted && !formData.description) {
+            <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle"></i>
+              Description is required
+            </small>
+            }
+          </label>
+          <div class="text-xs text-gray-500 flex items-center gap-2 mt-2">
+            <i class="pi pi-info-circle"></i>
+            Provide detailed information about the product features and specifications
+          </div>
+        </div>
+
+        <!-- Summary - FIXED CATEGORY LOOKUP -->
+        <div class="p-4 bg-gray-800/30 rounded-lg border border-gray-700/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-400 mb-1">Product Summary</p>
+              <div class="text-white space-y-1">
+                @if (formData.name) {
+                <p class="font-medium">{{ formData.name }}</p>
+                }
+                <!-- FIXED: Safe category lookup -->
+                @if (formData.categoryId && categories && categories.length > 0) {
+                  @let selectedCategory = getCategoryName(formData.categoryId);
+                  @if (selectedCategory) {
+                    <p class="text-sm text-gray-300">Category: {{ selectedCategory }}</p>
+                  }
+                }
+                @if (formData.price) {
+                <p class="text-sm text-gray-300">Price: {{ formData.price | currency }}</p>
+                }
+                @if (formData.stock !== null && formData.stock !== undefined) {
+                <p class="text-sm text-gray-300">Stock: {{ formData.stock }} units</p>
+                }
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm text-gray-400 mb-1">Product ID</p>
+              <p class="font-mono text-white">{{ formData.id || 'New' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-3 pt-4 border-t border-gray-700/50 bottom-0 bg-gray-900/95 backdrop-blur-sm -mx-6 px-6 py-4">
+          <button
+            pButton
+            type="button"
+            label="Cancel"
+            icon="pi pi-times"
+            (click)="closeModal()"
+            class="p-button-outlined p-button-secondary flex-1"
+            [disabled]="isSubmitting"
+          ></button>
+          <button
+            pButton
+            type="submit"
+            [label]="isEdit ? 'Update Product' : 'Add Product'"
+            [icon]="isEdit ? 'pi pi-save' : 'pi pi-check'"
+            class="p-button-gradient p-button-raised flex-1"
+            [loading]="isSubmitting"
+            [disabled]="isSubmitting"
+          ></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

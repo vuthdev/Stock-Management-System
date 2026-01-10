@@ -1,0 +1,47 @@
+<div class="h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+
+  <!-- Sidebar -->
+  <app-sidebar class="border-r border-gray-700/50 bg-gray-900/50 backdrop-blur-sm" />
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Navbar -->
+    <app-navbar />
+
+    <!-- Page Content -->
+    <div class="flex-1 overflow-auto">
+      <router-outlet></router-outlet>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-700/50 bg-gray-900/80 backdrop-blur-sm py-3 px-6">
+      <div class="flex items-center justify-between text-sm text-gray-500">
+        <div class="flex items-center gap-4">
+          <span>© 2024 StockPro. All rights reserved.</span>
+          <span class="hidden md:inline">•</span>
+          <span class="hidden md:inline">v2.1.0</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <!-- FIXED: Using p-button correctly -->
+          <button
+            pButton
+            [text]="true"
+            severity="secondary"
+            class="!text-gray-400 hover:!text-white text-sm">
+            <i class="pi pi-question-circle mr-2"></i>
+            Help
+          </button>
+          <button
+            pButton
+            [text]="true"
+            severity="secondary"
+            class="!text-gray-400 hover:!text-white text-sm">
+            <i class="pi pi-shield mr-2"></i>
+            Privacy
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

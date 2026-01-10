@@ -1,0 +1,158 @@
+<div
+  class="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+>
+  <div class="relative w-full max-w-md p-8">
+    <!-- Background Glow Effect -->
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-indigo-600/10 rounded-3xl blur-2xl"
+    ></div>
+
+    <!-- Main Card -->
+    <div
+      class="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-2xl p-8"
+    >
+      <!-- Logo/Header -->
+      <div class="flex flex-col items-center mb-8">
+        <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mb-4">
+          <i class="pi pi-lock text-white text-2xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-white mb-2">
+          Welcome
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400"
+            >Back</span
+          >
+        </h1>
+        <p class="text-gray-400 text-center">Sign in to access your dashboard</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Username Field -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-300 flex items-center gap-2">
+            <i class="pi pi-user text-blue-400"></i>
+            Username
+          </label>
+          <input
+            pInputText
+            formControlName="username"
+            type="text"
+            placeholder="Enter your username"
+            class="w-full bg-gray-800/50 border-gray-700/50 text-white placeholder-gray-500 !pl-10"
+            [ngClass]="{
+              'p-invalid': loginForm.get('username')?.invalid && loginForm.get('username')?.touched
+            }"
+          />
+          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+          <small class="text-red-400 text-xs flex items-center gap-1">
+            <i class="pi pi-exclamation-circle"></i>
+            Username is required
+          </small>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-300 flex items-center gap-2">
+            <i class="pi pi-key text-purple-400"></i>
+            Password
+          </label>
+          <div class="relative">
+            <input
+              pInputText
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Enter your password"
+              class="w-full bg-gray-800/50 border-gray-700/50 text-white placeholder-gray-500 !pl-10"
+              [ngClass]="{
+                'p-invalid':
+                  loginForm.get('password')?.invalid && loginForm.get('password')?.touched
+              }"
+            />
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white"
+              (click)="showPassword = !showPassword"
+            >
+              <i class="pi" [class.pi-eye]="!showPassword" [class.pi-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <small class="text-red-400 text-xs flex items-center gap-1">
+            <i class="pi pi-exclamation-circle"></i>
+            Password is required
+          </small>
+          }
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <p-checkbox formControlName="remember" [binary]="true" inputId="remember"></p-checkbox>
+            <label for="remember" class="text-sm text-gray-400 cursor-pointer"> Remember me </label>
+          </div>
+          <a class="text-sm text-blue-400 hover:text-blue-300 hover:underline transition-colors">
+            Forgot password?
+          </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          pButton
+          type="submit"
+          label="{{ isLoading ? 'Signing in...' : 'Sign In' }}"
+          [loading]="isLoading"
+          class="w-full !bg-gradient-to-r !from-blue-600 !to-purple-600 !border-0 !shadow-lg !h-12 !text-lg"
+        ></button>
+
+        <!-- Error Message -->
+        @if (errorMessage) {
+        <div
+          class="p-3 rounded-lg bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-500/30"
+        >
+          <p class="text-red-400 text-sm text-center flex items-center justify-center gap-2">
+            <i class="pi pi-exclamation-triangle"></i>
+            {{ errorMessage }}
+          </p>
+        </div>
+        }
+      </form>
+
+      <!-- Divider -->
+      <div class="flex items-center my-6">
+        <div class="flex-1 border-t border-gray-700"></div>
+        <span class="px-3 text-gray-500 text-sm">OR</span>
+        <div class="flex-1 border-t border-gray-700"></div>
+      </div>
+
+      <!-- Social Login (Optional) -->
+      <div class="grid grid-cols-2 gap-3">
+        <button
+          pButton
+          icon="pi pi-google"
+          label="Google"
+          class="w-full !bg-gray-800 !border-gray-700 !text-gray-300 hover:!bg-gray-700"
+        ></button>
+        <button
+          pButton
+          icon="pi pi-github"
+          label="GitHub"
+          class="w-full !bg-gray-800 !border-gray-700 !text-gray-300 hover:!bg-gray-700"
+        ></button>
+      </div>
+
+      <!-- Sign Up Link -->
+      <div class="mt-8 text-center">
+        <p class="text-gray-400 text-sm">
+          Don't have an account?
+          <a
+            routerLink="/register"
+            class="text-blue-400 hover:text-blue-300 font-medium hover:underline ml-1"
+          >
+            Create one now
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

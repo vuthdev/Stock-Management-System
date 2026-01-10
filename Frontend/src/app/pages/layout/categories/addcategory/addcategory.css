@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+/* Modal Animation */
+.modal-enter {
+  animation: modalEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.modal-leave {
+  animation: modalLeave 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalLeave {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+}
+
+/* Custom Input Styling */
+input.p-inputtext, textarea.p-inputtextarea {
+  background: rgba(31, 41, 55, 0.5) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+input.p-inputtext:focus, textarea.p-inputtextarea:focus {
+  background: rgba(31, 41, 55, 0.8) !important;
+  border-color: rgb(99, 102, 241) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+input.p-inputtext:hover, textarea.p-inputtextarea:hover {
+  border-color: rgba(107, 114, 128, 0.8) !important;
+}
+
+/* Invalid State */
+input.p-invalid, textarea.p-invalid {
+  border-color: rgb(239, 68, 68) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+input.p-invalid:focus, textarea.p-invalid:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Button Gradient */
+.p-button-gradient {
+  background: linear-gradient(135deg, rgb(99 102 241) 0%, rgb(147 51 234) 100%) !important;
+  border: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.p-button-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.p-button-gradient:hover::before {
+  left: 100%;
+}
+
+.p-button-gradient:hover {
+  background: linear-gradient(135deg, rgb(79 70 229) 0%, rgb(126 34 206) 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4) !important;
+}
+
+.p-button-gradient:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3) !important;
+}
+
+.p-button-gradient:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.p-button-gradient:disabled::before {
+  display: none;
+}
+
+/* Close Button */
+.p-button.p-button-text.p-button-rounded {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: rgb(156, 163, 175) !important;
+  transition: all 0.2s ease !important;
+}
+
+.p-button.p-button-text.p-button-rounded:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  transform: rotate(90deg);
+}
+
+/* Tips Box */
+.bg-gray-800\/30 {
+  backdrop-filter: blur(8px);
+}
+
+/* SweetAlert2 Customization */
+.swal2-confirm-btn {
+  background: linear-gradient(135deg, rgb(99 102 241) 0%, rgb(147 51 234) 100%) !important;
+  border: none !important;
+  padding: 12px 28px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.swal2-confirm-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Character Counter Animation */
+.text-green-400, .text-yellow-400, .text-red-400 {
+  transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .max-w-md {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+
+  .p-6 {
+    padding: 1.25rem !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1.25rem !important;
+  }
+}
+
+/* Scrollbar for textarea */
+textarea.p-inputtextarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea.p-inputtextarea::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 3px;
+}
+
+textarea.p-inputtextarea::-webkit-scrollbar-thumb {
+  background: rgb(75, 85, 99);
+  border-radius: 3px;
+}
+
+textarea.p-inputtextarea::-webkit-scrollbar-thumb:hover {
+  background: rgb(107, 114, 128);
+}
+
+/* Loading State */
+.p-progress-spinner {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.p-progress-spinner-circle {
+  stroke: url(#gradient) !important;
+  stroke-linecap: round !important;
+}
+
+/* Focus Styles */
+*:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}

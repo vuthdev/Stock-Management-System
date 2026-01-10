@@ -1,0 +1,324 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  [ngClass]="{
+    'bg-black/0 pointer-events-none': isClosing,
+    'bg-black/50 backdrop-blur-sm': !isClosing
+  }"
+  [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'"
+>
+  <!-- Modal Container -->
+  <div
+    class="w-full max-w-md max-h-[90vh]"
+    [ngClass]="{
+      'opacity-0 scale-95 translate-y-4': isClosing,
+      'opacity-100 scale-100 translate-y-0': !isClosing
+    }"
+    [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'"
+  >
+    <!-- Modal Card -->
+    <div
+      class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden backdrop-blur-xl flex flex-col max-h-[90vh]"
+    >
+      <!-- Header -->
+      <div
+        class="relative p-6 border-b border-gray-700/50 bg-gradient-to-r from-teal-600/10 to-emerald-600/10 shrink-0"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-gradient-to-br from-teal-500/20 to-emerald-500/20">
+              <i
+                class="pi"
+                [ngClass]="isEdit ? 'pi-user-edit text-emerald-400' : 'pi-user-plus text-teal-400'"
+              ></i>
+            </div>
+            <div>
+              <h1 class="font-bold text-white text-xl">
+                {{ isEdit ? 'Update User' : 'Create New User' }}
+              </h1>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ isEdit ? 'Modify user account details' : 'Add a new user to the system' }}
+              </p>
+            </div>
+          </div>
+          <button
+            pButton
+            icon="pi pi-times"
+            class="p-button-text p-button-rounded p-button-sm !text-gray-400 hover:!text-white hover:bg-gray-700/50"
+            (click)="closeModal()"
+            pTooltip="Close"
+            tooltipPosition="bottom"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form (ngSubmit)="onSubmit()" class="p-6 space-y-6 overflow-y-auto flex-1">
+        <!-- Profile Image Section -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-image text-teal-400"></i>
+              Profile Image (Optional)
+            </span>
+
+            <!-- Image Preview -->
+            @if (imagePreview || (formData.profileImage && isEdit)) {
+            <div class="mb-4 flex justify-center">
+              <div class="relative">
+                <img
+                  [src]="
+                    imagePreview ||
+                    (formData.profileImage ? baseUrl + formData.id + '/profileImage' : '')
+                  "
+                  alt="Profile preview"
+                  class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 shadow-lg"
+                  (error)="imagePreview = null"
+                />
+                <button
+                  type="button"
+                  (click)="removeImage()"
+                  class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition shadow-lg"
+                  pTooltip="Remove image"
+                  tooltipPosition="top"
+                >
+                  <i class="pi pi-times text-sm"></i>
+                </button>
+              </div>
+            </div>
+            }
+
+            <!-- File Upload -->
+            <div
+              class="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center cursor-pointer transition-all hover:border-teal-500 hover:bg-gray-800/30"
+              (click)="fileInput.click()"
+              (drop)="onFileDrop($event)"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              [ngClass]="{ 'border-teal-500 bg-gray-800/30': isDragging }"
+            >
+              @if (!imagePreview && (!formData || !formData.profileImage)) {
+              <div class="space-y-3">
+                <i class="pi pi-cloud-upload text-3xl text-gray-500"></i>
+                <div>
+                  <p class="text-gray-300 font-medium">Click to upload or drag & drop</p>
+                  <p class="text-sm text-gray-500 mt-1">PNG, JPG or GIF (MAX. 5MB)</p>
+                </div>
+              </div>
+              } @else {
+              <div class="space-y-2">
+                <i class="pi pi-check-circle text-2xl text-teal-400"></i>
+                <p class="text-teal-300 font-medium">Image ready</p>
+                <p class="text-sm text-gray-400">Click to change</p>
+              </div>
+              }
+              <input
+                #fileInput
+                type="file"
+                class="hidden"
+                accept="image/*"
+                (change)="onFileSelected($event)"
+              />
+            </div>
+
+            @if (selectedFile) {
+            <p class="text-xs text-teal-400 mt-2 text-center">
+              <i class="pi pi-info-circle mr-1"></i>
+              Selected: {{ selectedFile.name }} ({{ getFileSize(selectedFile.size) }})
+            </p>
+            }
+          </label>
+        </div>
+
+        <!-- Username -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-user text-teal-400"></i>
+              Username
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <input
+                pInputText
+                [(ngModel)]="formData.username"
+                name="username"
+                placeholder="Enter username"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3"
+                autocomplete="username"
+                [ngClass]="{ 'p-invalid': formSubmitted && !formData.username }"
+              />
+              <i
+                class="pi pi-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              ></i>
+            </div>
+            @if (formSubmitted && !formData.username) {
+            <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle"></i>
+              Username is required
+            </small>
+            }
+          </label>
+        </div>
+
+        <!-- Email -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-envelope text-teal-400"></i>
+              Email Address
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <input
+                pInputText
+                [(ngModel)]="formData.email"
+                name="email"
+                type="email"
+                placeholder="Enter email address"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3"
+                autocomplete="email"
+                [ngClass]="{ 'p-invalid': formSubmitted && !formData.email }"
+              />
+              <i
+                class="pi pi-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              ></i>
+            </div>
+            @if (formSubmitted && !formData.email) {
+            <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle"></i>
+              Email is required
+            </small>
+            }
+          </label>
+        </div>
+
+        <!-- Password -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-lock text-teal-400"></i>
+              Password
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <input
+                pInputText
+                [(ngModel)]="formData.password"
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3"
+                autocomplete="new-password"
+                [ngClass]="{ 'p-invalid': formSubmitted && !formData.password }"
+              />
+              <i
+                class="pi pi-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              ></i>
+            </div>
+            @if (formSubmitted && !formData.password) {
+            <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle"></i>
+              Password is required
+            </small>
+            }
+          </label>
+        </div>
+
+        <!-- Gender -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-venus-mars text-teal-400"></i>
+              Gender
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                [ngClass]="{
+                  'bg-teal-500/20 border-teal-500 text-teal-300': formData.gender === 'Male',
+                  'bg-gray-800/30 border-gray-600 text-gray-300': formData.gender !== 'Male'
+                }"
+                class="p-4 rounded-xl border flex flex-col items-center justify-center transition-all hover:bg-gray-800/50"
+                (click)="formData.gender = 'Male'"
+              >
+                <i class="pi pi-mars text-xl mb-2"></i>
+                <span class="font-medium">Male</span>
+              </button>
+              <button
+                type="button"
+                [ngClass]="{
+                  'bg-pink-500/20 border-pink-500 text-pink-300': formData.gender === 'Female',
+                  'bg-gray-800/30 border-gray-600 text-gray-300': formData.gender !== 'Female'
+                }"
+                class="p-4 rounded-xl border flex flex-col items-center justify-center transition-all hover:bg-gray-800/50"
+                (click)="formData.gender = 'Female'"
+              >
+                <i class="pi pi-venus text-xl mb-2"></i>
+                <span class="font-medium">Female</span>
+              </button>
+            </div>
+            @if (formSubmitted && !formData.gender) {
+            <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle"></i>
+              Please select a gender
+            </small>
+            }
+          </label>
+        </div>
+
+        <!-- User Summary -->
+        <div class="p-4 bg-gray-800/30 rounded-xl border border-gray-700/30">
+          <div class="space-y-3">
+            <p class="text-sm font-semibold text-gray-300 mb-1">User Summary</p>
+            <div class="space-y-2">
+              @if (formData.username) {
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-sm">Username</span>
+                <span class="font-medium text-white">{{ formData.username }}</span>
+              </div>
+              } @if (formData.email) {
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-sm">Email</span>
+                <span class="font-medium text-white">{{ formData.email }}</span>
+              </div>
+              } @if (formData.gender) {
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-sm">Gender</span>
+                <span class="font-medium text-white">{{ formData.gender }}</span>
+              </div>
+              }
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-sm">User ID</span>
+                <span class="font-mono text-white">{{ formData.id || 'New User' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-3 pt-4 border-t border-gray-700/50">
+          <button
+            pButton
+            type="button"
+            label="Cancel"
+            icon="pi pi-times"
+            (click)="closeModal()"
+            class="p-button-outlined p-button-secondary flex-1"
+            [disabled]="isSubmitting"
+          ></button>
+          <button
+            pButton
+            type="submit"
+            [label]="isEdit ? 'Update User' : 'Create User'"
+            [icon]="isEdit ? 'pi pi-save' : 'pi pi-user-plus'"
+            class="p-button-gradient p-button-raised flex-1"
+            [loading]="isSubmitting"
+            [disabled]="isSubmitting"
+          ></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+th, td{
+  @apply p-2;
+}
+
+.leaving-container {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+.leaving {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}

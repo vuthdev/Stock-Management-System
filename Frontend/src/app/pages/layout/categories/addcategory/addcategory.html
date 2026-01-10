@@ -1,0 +1,172 @@
+<!-- Backdrop -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+     [ngClass]="{
+        'bg-black/0 pointer-events-none': isClosing,
+        'bg-black/50 backdrop-blur-sm': !isClosing
+     }"
+     [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'">
+
+  <!-- Modal Container -->
+  <div class="w-full max-w-md"
+       [ngClass]="{
+          'opacity-0 scale-95 translate-y-4': isClosing,
+          'opacity-100 scale-100 translate-y-0': !isClosing
+       }"
+       [style.transition]="'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'">
+
+    <!-- Modal Card -->
+    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden backdrop-blur-xl">
+
+      <!-- Header -->
+      <div class="relative p-6 border-b border-gray-700/50 bg-gradient-to-r from-indigo-600/10 to-purple-600/10">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
+              <i class="pi" [ngClass]="isEdit ? 'pi-pencil text-purple-400' : 'pi-plus-circle text-indigo-400'"></i>
+            </div>
+            <div>
+              <h1 class="font-bold text-white text-xl">
+                {{ isEdit ? 'Update Category' : 'Create New Category' }}
+              </h1>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ isEdit ? 'Modify existing category details' : 'Add a new category to your catalog' }}
+              </p>
+            </div>
+          </div>
+          <button pButton
+                  icon="pi pi-times"
+                  class="p-button-text p-button-rounded p-button-sm !text-gray-400 hover:!text-white hover:bg-gray-700/50"
+                  (click)="closeModal()"
+                  tooltip="Close"
+                  tooltipPosition="bottom">
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form (ngSubmit)="onSubmit()" class="p-6 space-y-6">
+
+        <!-- Category Name Field -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-tag text-indigo-400"></i>
+              Category Name
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <input
+                pInputText
+                [(ngModel)]="formData.name"
+                name="name"
+                placeholder="Enter category name"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3"
+                autocomplete="off"
+                [ngClass]="{'p-invalid': formSubmitted && !formData.name}">
+              <i class="pi pi-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+            </div>
+            @if (formSubmitted && !formData.name) {
+              <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i>
+                Category name is required
+              </small>
+            }
+          </label>
+        </div>
+
+        <!-- Category Description Field -->
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="pi pi-align-left text-indigo-400"></i>
+              Category Description
+              <span class="text-red-400 ml-1">*</span>
+            </span>
+            <div class="relative">
+              <textarea
+                pInputTextarea
+                [(ngModel)]="formData.description"
+                name="description"
+                placeholder="Enter category description"
+                rows="4"
+                class="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 pl-10 py-3 resize-none"
+                autocomplete="off"
+                [ngClass]="{'p-invalid': formSubmitted && !formData.description}">
+              </textarea>
+              <i class="pi pi-align-left absolute left-3 top-4 text-gray-500"></i>
+            </div>
+            @if (formSubmitted && !formData.description) {
+              <small class="p-error text-red-400 text-sm mt-2 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i>
+                Category description is required
+              </small>
+            }
+          </label>
+          <div class="text-xs text-gray-500 flex items-center gap-2 mt-2">
+            <i class="pi pi-info-circle"></i>
+            Provide a clear description to help organize products
+          </div>
+        </div>
+
+        <!-- Character Counter -->
+        <div class="flex justify-between items-center text-sm">
+          <div class="text-gray-500">
+            @if (formData.description) {
+              <span [ngClass]="{
+                'text-green-400': formData.description.length >= 10,
+                'text-yellow-400': formData.description.length > 0 && formData.description.length < 10,
+                'text-gray-500': !formData.description
+              }">
+                {{ formData.description.length || 0 }} characters
+              </span>
+            } @else {
+              <span class="text-gray-500">0 characters</span>
+            }
+          </div>
+          <div class="text-gray-500">
+            ID: {{ formData.id || 'New' }}
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-3 pt-4 border-t border-gray-700/50">
+          <button
+            pButton
+            type="button"
+            label="Cancel"
+            icon="pi pi-times"
+            (click)="closeModal()"
+            class="p-button-outlined p-button-secondary flex-1"
+            [disabled]="isSubmitting">
+          </button>
+          <button
+            pButton
+            type="submit"
+            [label]="isEdit ? 'Update Category' : 'Create Category'"
+            [icon]="isEdit ? 'pi pi-save' : 'pi pi-check'"
+            class="p-button-gradient p-button-raised flex-1"
+            [loading]="isSubmitting"
+            [disabled]="isSubmitting">
+          </button>
+        </div>
+
+        <!-- Form Tips -->
+        <div class="p-4 bg-gray-800/30 rounded-lg border border-gray-700/30">
+          <div class="flex items-start gap-3">
+            <i class="pi pi-lightbulb text-yellow-400 mt-0.5"></i>
+            <div class="text-xs text-gray-400">
+              <p class="font-medium text-gray-300 mb-1">Tips for a good category:</p>
+              <ul class="list-disc list-inside space-y-1 ml-2">
+                <li>Use clear, descriptive names</li>
+                <li>Keep descriptions concise but informative</li>
+                <li>Use consistent naming conventions</li>
+                <li>Avoid special characters in names</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
