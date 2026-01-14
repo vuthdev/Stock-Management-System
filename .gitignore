@@ -23,6 +23,7 @@ Thumbs.db
 .env.*
 application-local.yml
 application-dev.yml
+application.properties
 
 # =====================
 # Frontend (Angular)
